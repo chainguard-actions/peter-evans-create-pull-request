@@ -1,6 +1,12 @@
 # peter-evans/create-pull-request
 
-Hardened GitHub Action by [Chainguard](https://www.chainguard.dev).
+Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request).
+
+## Versions
+
+| Version | Tag | Upstream commit |
+|---------|-----|-----------------|
+| v8.1.0 | [`v8.1.0`](https://github.com/chainguard-actions/create-pull-request/tree/v8.1.0) | — |
 
 ## Privacy
 
