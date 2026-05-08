@@ -1,4 +1,6 @@
 {
-  "upstream": "peter-evans/create-pull-request",
-  "version": "v8.1.0"
+  "owner": "peter-evans",
+  "repo": "create-pull-request",
+  "version": "",
+  "url": "https://github.com/peter-evans/create-pull-request"
 }

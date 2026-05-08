@@ -2,5 +2,6 @@
   "owner": "peter-evans",
   "name": "create-pull-request",
   "visibility": "internal",
-  "description": "A GitHub action to create a pull request for changes to your repository in the actions workspace"
+  "description": "A GitHub action to create a pull request for changes to your repository in the actions workspace",
+  "block_publish": false
 }
