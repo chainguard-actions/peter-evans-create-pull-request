@@ -8,7 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
-| v8.1.0 | [`v8.1.0`](https://github.com/chainguard-actions/create-pull-request/tree/v8.1.0) | — |
+| v8.1.0 | [`v8.1.0`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v8.1.0) | — |
 
 ## Privacy
 
