@@ -1,6 +1,6 @@
 # peter-evans/create-pull-request
 
-A GitHub action to create a pull request for changes to your repository in the actions workspace
+Creates a pull request for changes to your repository in the actions workspace
 
 Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request).
 
