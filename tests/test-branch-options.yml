@@ -1,0 +1,28 @@
+name: Test branch options inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Make a change
+        run: echo "test change for branch options" >> test-branch-file.txt
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          commit-message: 'test: branch options change'
+          title: 'Test PR branch options'
+          body: 'Testing branch-suffix and push-to-fork inputs'
+          branch: 'test/act-branch-options'
+          branch-suffix: short-commit-hash
+          push-to-fork: ''
+      - name: Assert action ran
+        run: |
+          echo "pull-request-number: ${{ steps.action.outputs.pull-request-number }}"
+          echo "pull-request-url: ${{ steps.action.outputs.pull-request-url }}"
+          echo "pull-request-operation: ${{ steps.action.outputs.pull-request-operation }}"
+          echo "pull-request-branch: ${{ steps.action.outputs.pull-request-branch }}"
+          echo "PASS: action completed with branch-suffix/push-to-fork inputs"

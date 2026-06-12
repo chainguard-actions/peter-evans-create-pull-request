@@ -1,0 +1,30 @@
+name: Test path and add-paths inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Make a change and create body file
+        run: |
+          echo "test change for path inputs" >> test-path-file.txt
+          echo "This is the PR body from a file" > /tmp/pr-body.txt
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          path: .
+          add-paths: test-path-file.txt
+          base: main
+          body-path: /tmp/pr-body.txt
+          commit-message: 'test: path inputs change'
+          title: 'Test PR path inputs'
+          branch: 'test/act-path-inputs'
+      - name: Assert action ran
+        run: |
+          echo "pull-request-number: ${{ steps.action.outputs.pull-request-number }}"
+          echo "pull-request-url: ${{ steps.action.outputs.pull-request-url }}"
+          echo "pull-request-operation: ${{ steps.action.outputs.pull-request-operation }}"
+          echo "PASS: action completed with path/add-paths/base/body-path inputs"
