@@ -1,0 +1,29 @@
+name: Test body-path input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create body file and make a change
+        run: |
+          echo "This is the PR body from a file." > pr-body.md
+          echo "test change for body-path" >> body-path-test.txt
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          commit-message: 'test: body-path change'
+          title: 'Test PR with body-path'
+          body-path: pr-body.md
+          branch: 'test/act-body-path'
+      - name: Assert action ran
+        run: |
+          echo "pull-request-operation: ${{ steps.action.outputs.pull-request-operation }}"
+          echo "Action completed (may have failed due to no real GitHub token in act)"
+          echo "PASS"

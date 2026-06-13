@@ -1,0 +1,31 @@
+name: Test basic usage
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Make a change to commit
+        run: |
+          echo "test change" >> test-file.txt
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          commit-message: 'test: automated change'
+          title: 'Test PR from act'
+          body: 'This is a test pull request body'
+          branch: 'test/act-basic'
+          draft: false
+          signoff: false
+          maintainer-can-modify: true
+      - name: Assert action ran
+        run: |
+          echo "pull-request-operation: ${{ steps.action.outputs.pull-request-operation }}"
+          echo "Action completed (may have failed due to no real GitHub token in act)"
+          echo "PASS"

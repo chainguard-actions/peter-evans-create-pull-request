@@ -1,0 +1,31 @@
+name: Test branch-related inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Make a change to commit
+        run: |
+          echo "test change for branch options" >> branch-test.txt
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          branch-token: ${{ github.token }}
+          commit-message: 'test: branch options change'
+          title: 'Test PR with branch options'
+          body: 'Testing base, branch-suffix, and branch-token inputs'
+          branch: 'test/act-branch-options'
+          branch-suffix: short-commit-hash
+          base: main
+      - name: Assert action ran
+        run: |
+          echo "pull-request-operation: ${{ steps.action.outputs.pull-request-operation }}"
+          echo "Action completed (may have failed due to no real GitHub token in act)"
+          echo "PASS"

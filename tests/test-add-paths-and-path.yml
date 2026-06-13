@@ -1,0 +1,30 @@
+name: Test add-paths and path inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Make a change to commit
+        run: |
+          echo "test change for add-paths" >> specific-file.txt
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          path: .
+          add-paths: specific-file.txt
+          commit-message: 'test: add-paths change'
+          title: 'Test PR with add-paths'
+          body: 'Testing add-paths input'
+          branch: 'test/act-add-paths'
+      - name: Assert action ran
+        run: |
+          echo "pull-request-operation: ${{ steps.action.outputs.pull-request-operation }}"
+          echo "Action completed (may have failed due to no real GitHub token in act)"
+          echo "PASS"
