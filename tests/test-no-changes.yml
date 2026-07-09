@@ -1,0 +1,44 @@
+name: Test no changes scenario
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Configure git identity
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+
+      - id: cpr
+        name: Run create-pull-request with no changes
+        uses: .
+        with:
+          token: ${{ github.token }}
+          branch: test/no-changes
+          title: 'Test PR - no changes'
+          body: 'This is a test PR with no changes'
+          commit-message: 'test: no changes commit'
+        continue-on-error: true
+
+      - name: Assert no PR was created (no changes)
+        env:
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          PR_OP: ${{ steps.cpr.outputs.pull-request-operation }}
+        run: |
+          echo "pull-request-number: '$PR_NUMBER'"
+          echo "pull-request-url: '$PR_URL'"
+          echo "pull-request-operation: '$PR_OP'"
+          # When there are no changes, the action should not create a PR
+          # and outputs should be empty
+          if [ -n "$PR_NUMBER" ]; then
+            echo "FAIL: expected no PR number but got: $PR_NUMBER"
+            exit 1
+          fi
+          echo "PASS: no PR created as expected when there are no changes"

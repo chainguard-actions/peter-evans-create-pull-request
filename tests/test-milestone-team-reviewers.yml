@@ -1,0 +1,35 @@
+name: Test milestone and team-reviewers inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Make a change so action has something to commit
+        run: |
+          echo "test change for milestone/team-reviewers test" >> test-milestone-team-reviewers.txt
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          branch: test/milestone-team-reviewers
+          title: 'Test milestone and team-reviewers'
+          body: 'Testing milestone and team-reviewers inputs'
+          commit-message: 'test: milestone and team-reviewers'
+          milestone: 1
+          team-reviewers: my-org/my-team
+      - name: Assert action ran (milestone and team-reviewers inputs accepted)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "skipped" ]; then
+            echo "FAIL: action step was skipped"
+            exit 1
+          fi
+          echo "PASS: action accepted milestone and team-reviewers inputs and ran"

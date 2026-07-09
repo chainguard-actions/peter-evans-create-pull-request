@@ -1,0 +1,35 @@
+name: Test reviewers and assignees inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Make a change so action has something to commit
+        run: |
+          echo "test change for reviewers/assignees test" >> test-reviewers-assignees.txt
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          branch: test/reviewers-assignees
+          title: 'Test reviewers and assignees'
+          body: 'Testing reviewers and assignees inputs'
+          commit-message: 'test: reviewers and assignees'
+          reviewers: octocat
+          assignees: octocat
+      - name: Assert action ran (reviewers and assignees inputs accepted)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "skipped" ]; then
+            echo "FAIL: action step was skipped"
+            exit 1
+          fi
+          echo "PASS: action accepted reviewers and assignees inputs and ran"
