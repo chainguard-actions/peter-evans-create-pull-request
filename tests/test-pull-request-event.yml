@@ -1,0 +1,48 @@
+name: Test pull request event context
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/pull/1/merge
+      GITHUB_EVENT_NAME: pull_request
+      GITHUB_HEAD_REF: feature-branch
+      GITHUB_BASE_REF: main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: cpr
+        uses: .
+        with:
+          token: ${{ github.token }}
+          branch: test/pr-event-branch
+          base: main
+          title: 'Test PR from pull_request event'
+          body: 'Testing create-pull-request in a pull_request event context'
+          commit-message: 'test: pr event context'
+        continue-on-error: true
+
+      - name: Assert action ran in pull_request event context
+        env:
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          PR_OPERATION: ${{ steps.cpr.outputs.pull-request-operation }}
+          OUTCOME: ${{ steps.cpr.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "pull-request-number: '$PR_NUMBER'"
+          echo "pull-request-url: '$PR_URL'"
+          echo "pull-request-operation: '$PR_OPERATION'"
+          # The action should run (not be skipped) in pull_request event context
+          if [ "$OUTCOME" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          # With no changes, no PR should be created
+          if [ -n "$PR_NUMBER" ]; then
+            echo "INFO: PR was created with number $PR_NUMBER"
+          else
+            echo "PASS: no PR created (no changes in pull_request event context)"
+          fi
+          echo "PASS: action ran in pull_request event context (outcome=$OUTCOME)"

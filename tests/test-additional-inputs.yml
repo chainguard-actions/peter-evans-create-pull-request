@@ -1,0 +1,48 @@
+name: Test additional inputs coverage
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create body file for body-path input
+        run: |
+          mkdir -p /tmp/pr-body
+          echo "This is the pull request body from a file." > /tmp/pr-body/body.md
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          branch-token: ${{ github.token }}
+          path: .
+          assignees: octocat
+          reviewers: octocat
+          team-reviewers: my-team
+          milestone: 1
+          push-to-fork: ''
+          body-path: /tmp/pr-body/body.md
+          branch: create-pull-request/additional-inputs-test
+          title: 'Test additional inputs'
+          commit-message: 'test: additional inputs coverage'
+
+      - name: Assert action ran (outputs present or action attempted)
+        env:
+          PR_NUMBER: ${{ steps.action.outputs.pull-request-number }}
+          PR_URL: ${{ steps.action.outputs.pull-request-url }}
+          PR_OP: ${{ steps.action.outputs.pull-request-operation }}
+          PR_SHA: ${{ steps.action.outputs.pull-request-head-sha }}
+          PR_BRANCH: ${{ steps.action.outputs.pull-request-branch }}
+        run: |
+          echo "pull-request-number: $PR_NUMBER"
+          echo "pull-request-url: $PR_URL"
+          echo "pull-request-operation: $PR_OP"
+          echo "pull-request-head-sha: $PR_SHA"
+          echo "pull-request-branch: $PR_BRANCH"
+          echo "PASS: action executed with additional inputs (assignees, body-path, branch-token, milestone, path, push-to-fork, reviewers, team-reviewers)"

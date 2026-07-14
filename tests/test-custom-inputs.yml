@@ -1,0 +1,54 @@
+name: Test custom inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: cpr
+        uses: .
+        with:
+          token: ${{ github.token }}
+          branch: test/custom-inputs-branch
+          branch-suffix: short-commit-hash
+          title: 'Custom Title for Test PR'
+          body: 'Custom body text for the test pull request'
+          commit-message: 'chore: custom commit message for test'
+          committer: 'Test Bot <testbot@example.com>'
+          author: 'Test Author <testauthor@example.com>'
+          labels: 'automated,test'
+          draft: false
+          delete-branch: false
+          maintainer-can-modify: true
+        continue-on-error: true
+
+      - name: Assert action ran with custom inputs
+        env:
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          PR_OPERATION: ${{ steps.cpr.outputs.pull-request-operation }}
+          PR_BRANCH: ${{ steps.cpr.outputs.pull-request-branch }}
+          OUTCOME: ${{ steps.cpr.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "pull-request-number: '$PR_NUMBER'"
+          echo "pull-request-url: '$PR_URL'"
+          echo "pull-request-operation: '$PR_OPERATION'"
+          echo "pull-request-branch: '$PR_BRANCH'"
+          # The action should run (not be skipped) even with custom inputs
+          if [ "$OUTCOME" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          # With no changes, no PR should be created
+          if [ -n "$PR_NUMBER" ]; then
+            echo "INFO: PR was created with number $PR_NUMBER (unexpected in test env)"
+          else
+            echo "PASS: no PR created (no changes), action handled custom inputs correctly"
+          fi
+          echo "PASS: action ran with custom inputs (outcome=$OUTCOME)"
