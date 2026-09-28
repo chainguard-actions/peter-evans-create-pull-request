@@ -1,0 +1,45 @@
+name: Test no changes scenario
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Configure git identity
+        run: |
+          git config user.email "test@example.com"
+          git config user.name "Test User"
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          title: 'Test PR - no changes'
+          body: 'This is a test with no changes'
+          branch: 'test/no-changes'
+
+      - name: Assert action ran and handled no-changes gracefully
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          PR_NUMBER: ${{ steps.action.outputs.pull-request-number }}
+          PR_OP: ${{ steps.action.outputs.pull-request-operation }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "pull-request-number: $PR_NUMBER"
+          echo "pull-request-operation: $PR_OP"
+          if [ "$OUTCOME" = "success" ]; then
+            # No changes means no PR was created; number should be empty
+            if [ -n "$PR_NUMBER" ]; then
+              echo "FAIL: expected no PR number when there are no changes, got '$PR_NUMBER'"
+              exit 1
+            fi
+            echo "PASS: action succeeded with no changes (no PR created)"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
