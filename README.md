@@ -12,6 +12,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v5 | [`v5`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v5) | [`4e1beaa`](https://github.com/peter-evans/create-pull-request/commit/4e1beaa7521e8b457b572c090b25bd3db56bf1c5) |
 | v6.0.5 | [`v6.0.5`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v6.0.5) | [`6d6857d`](https://github.com/peter-evans/create-pull-request/commit/6d6857d36972b65feb161a90e484f2984215f83e) |
 | v7.0.10 | [`v7.0.10`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v7.0.10) | [`d4f3be6`](https://github.com/peter-evans/create-pull-request/commit/d4f3be6ce6f4083b7ac7490ab98b48a62db1ee41) |
+| v7.0.9 | [`v7.0.9`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v7.0.9) | [`84ae59a`](https://github.com/peter-evans/create-pull-request/commit/84ae59a2cdc2258d6fa0732dd66352dddae2a412) |
 | v8.1.0 | [`v8.1.0`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v8.1.0) | [`c0f553f`](https://github.com/peter-evans/create-pull-request/commit/c0f553fe549906ede9cf27b5156039d195d2ece0) |
 | v8.1.1 | [`v8.1.1`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v8.1.1) | [`5f6978f`](https://github.com/peter-evans/create-pull-request/commit/5f6978faf089d4d20b00c7766989d076bb2fc7f1) |
 
