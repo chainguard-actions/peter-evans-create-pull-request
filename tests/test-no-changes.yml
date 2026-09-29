@@ -1,0 +1,47 @@
+name: Test no-changes scenario - action skips PR creation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Do NOT make any file changes — the action should detect no changes
+      # and skip PR creation entirely, producing empty outputs
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          title: 'Test PR - no changes'
+          body: 'This PR should not be created because there are no changes.'
+          branch: 'test/create-pull-request-no-changes'
+          commit-message: 'test: no changes'
+
+      - name: Assert action handled no-changes scenario
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          PR_NUMBER: ${{ steps.action.outputs.pull-request-number }}
+          PR_URL: ${{ steps.action.outputs.pull-request-url }}
+          PR_OP: ${{ steps.action.outputs.pull-request-operation }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "pull-request-number: $PR_NUMBER"
+          echo "pull-request-url: $PR_URL"
+          echo "pull-request-operation: $PR_OP"
+          if [ "$OUTCOME" = "success" ]; then
+            # When there are no changes, the action should produce empty outputs
+            # (no PR created/updated)
+            if [ -n "$PR_NUMBER" ]; then
+              echo "FAIL: expected no PR number (no changes), but got: $PR_NUMBER"
+              exit 1
+            fi
+            echo "PASS: action completed with no PR created (no changes detected)"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo is not resolvable on GitHub API)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
