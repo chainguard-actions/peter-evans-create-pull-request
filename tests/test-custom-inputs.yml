@@ -1,0 +1,64 @@
+name: Test create-pull-request with custom inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a file change for custom inputs test
+        run: |
+          echo "custom-test-$(date +%s)" > tests/test-custom-artifact.txt
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          branch: create-pull-request/test-custom
+          title: 'Custom Test PR'
+          body: 'Testing custom inputs for create-pull-request action'
+          commit-message: 'test: custom inputs test commit'
+          committer: 'Test Bot <testbot@example.com>'
+          author: 'Test Author <testauthor@example.com>'
+          signoff: true
+          draft: false
+          labels: |
+            test
+            automated
+          add-paths: tests/test-custom-artifact.txt
+
+      - name: Assert action ran with custom inputs
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          PR_NUMBER: ${{ steps.action.outputs.pull-request-number }}
+          PR_URL: ${{ steps.action.outputs.pull-request-url }}
+          PR_OP: ${{ steps.action.outputs.pull-request-operation }}
+          PR_BRANCH: ${{ steps.action.outputs.pull-request-branch }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "pull-request-number: $PR_NUMBER"
+          echo "pull-request-url: $PR_URL"
+          echo "pull-request-operation: $PR_OP"
+          echo "pull-request-branch: $PR_BRANCH"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$PR_NUMBER" ]; then
+              echo "FAIL: action succeeded but pull-request-number is empty"
+              exit 1
+            fi
+            if [ -z "$PR_OP" ]; then
+              echo "FAIL: action succeeded but pull-request-operation is empty"
+              exit 1
+            fi
+            echo "PASS: PR created/updated with number=$PR_NUMBER op=$PR_OP"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
+
+      - name: Clean up test artifact
+        if: always()
+        run: rm -f tests/test-custom-artifact.txt

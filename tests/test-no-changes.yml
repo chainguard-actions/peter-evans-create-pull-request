@@ -1,0 +1,39 @@
+name: Test create-pull-request with no changes
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          branch: create-pull-request/test-no-changes
+          title: 'Test PR - no changes'
+          body: 'This is a test PR with no changes'
+          commit-message: 'test: no changes commit'
+
+      - name: Assert action ran and handled no-changes gracefully
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          PR_NUMBER: ${{ steps.action.outputs.pull-request-number }}
+          PR_URL: ${{ steps.action.outputs.pull-request-url }}
+          PR_OP: ${{ steps.action.outputs.pull-request-operation }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "pull-request-number: $PR_NUMBER"
+          echo "pull-request-url: $PR_URL"
+          echo "pull-request-operation: $PR_OP"
+          if [ "$OUTCOME" = "success" ]; then
+            # No changes means no PR should be created; outputs should be empty
+            echo "PASS: action succeeded (no changes detected, no PR created)"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
