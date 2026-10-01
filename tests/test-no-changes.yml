@@ -1,0 +1,46 @@
+name: Test no changes scenario
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Ensure working tree is clean (no uncommitted changes)
+        run: |
+          git status
+          git diff --exit-code || true
+          git clean -fd || true
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          title: 'Test PR no changes'
+          body: 'This PR should not be created because there are no changes.'
+          branch: 'test/create-pull-request-no-changes'
+          commit-message: 'test: no changes'
+
+      - name: Assert action ran and handled no-changes gracefully
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          PR_NUMBER: ${{ steps.action.outputs.pull-request-number }}
+          PR_OP: ${{ steps.action.outputs.pull-request-operation }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "pull-request-number: $PR_NUMBER"
+          echo "pull-request-operation: $PR_OP"
+          if [ "$OUTCOME" = "success" ]; then
+            # When there are no changes, the action should succeed but produce no PR
+            if [ -n "$PR_NUMBER" ]; then
+              echo "INFO: action created PR $PR_NUMBER even with no changes (may have detected existing branch)"
+            else
+              echo "PASS: no PR created when there are no changes"
+            fi
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi

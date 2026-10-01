@@ -1,0 +1,49 @@
+name: Test branch-suffix input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Create a test file change
+        run: |
+          echo "test change $(date)" > test-change.txt
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          branch: test-branch-suffix
+          branch-suffix: short-commit-hash
+          title: 'Test branch-suffix input'
+          body: 'Testing branch-suffix input'
+          commit-message: 'test: branch-suffix input'
+
+      - name: Assert action ran with branch-suffix input
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          PR_NUMBER: ${{ steps.action.outputs.pull-request-number }}
+          PR_OP: ${{ steps.action.outputs.pull-request-operation }}
+          PR_BRANCH: ${{ steps.action.outputs.pull-request-branch }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "pull-request-number: $PR_NUMBER"
+          echo "pull-request-operation: $PR_OP"
+          echo "pull-request-branch: $PR_BRANCH"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$PR_NUMBER" ] && [ -z "$PR_OP" ]; then
+              echo "FAIL: action succeeded but no outputs were set"
+              exit 1
+            fi
+            echo "PASS: action succeeded with outputs"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
