@@ -17,6 +17,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v7.0.9 | [`v7.0.9`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v7.0.9) | [`84ae59a`](https://github.com/peter-evans/create-pull-request/commit/84ae59a2cdc2258d6fa0732dd66352dddae2a412) | — |
 | v8.1.0 | [`v8.1.0`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v8.1.0) | [`c0f553f`](https://github.com/peter-evans/create-pull-request/commit/c0f553fe549906ede9cf27b5156039d195d2ece0) | [`HARDENING.md`](https://github.com/chainguard-actions/peter-evans-create-pull-request/blob/v8.1.0/HARDENING.md) |
 | v8.1.1 | [`v8.1.1`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v8.1.1) | [`5f6978f`](https://github.com/peter-evans/create-pull-request/commit/5f6978faf089d4d20b00c7766989d076bb2fc7f1) | [`HARDENING.md`](https://github.com/chainguard-actions/peter-evans-create-pull-request/blob/v8.1.1/HARDENING.md) |
+| v8.1.2 | [`v8.1.2`](https://github.com/chainguard-actions/peter-evans-create-pull-request/tree/v8.1.2) | [`15733db`](https://github.com/peter-evans/create-pull-request/commit/15733dbdfeedb4f7fdb73d13c6f5ac83b710fab8) | [`HARDENING.md`](https://github.com/chainguard-actions/peter-evans-create-pull-request/blob/v8.1.2/HARDENING.md) |
 
 ## Privacy
 
